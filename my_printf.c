@@ -138,7 +138,7 @@ int my_printf(char * restrict format, ...){
             i++;
             counter++;              
         }
-        i++;
+    i++;
     }
     va_end(parametersInfos);
     return counter;

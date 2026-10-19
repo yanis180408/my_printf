@@ -1,8 +1,8 @@
 NAME = my_printf
-SRC = my_printf.c write.c
+SRC = my_printf.c
 OBJ = $(SRC:.c=.o)
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g3
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address -fno-omit-frame-pointer
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

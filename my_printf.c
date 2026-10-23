@@ -46,8 +46,8 @@ int print_int_d(int number){
     return byte;
 }
 
-int print_int_u(unsigned int number){
-    size_t number_length = length_positive_number(number, 10);
+int print_int(unsigned int number, size_t base){
+    size_t number_length = length_positive_number(number, base);
     unsigned int n = number;
     char *buf = malloc(number_length + 1); //+1 pour \0
     if (buf == NULL){
@@ -57,29 +57,8 @@ int print_int_u(unsigned int number){
     buf[number_length] = '\0';
 
     for (size_t j = 0; j < number_length; j++){
-        buf[(number_length - 1) - j] = '0' + (n % 10);
-        n /= 10;
-    }
-
-    int byte = write(1, buf, number_length);
-
-    free(buf);
-    return byte;
-}
-
-int print_int_o(unsigned int number){
-    size_t number_length = length_positive_number(number, 8);
-    unsigned int n = number;
-    char *buf = malloc(number_length + 1); //+1 pour \0
-    if (buf == NULL){
-        return -1;
-    }
-
-    buf[number_length] = '\0';
-
-    for (size_t j = 0; j < number_length; j++){
-        buf[(number_length - 1) - j] = '0' + (n % 8);
-        n /= 8;
+        buf[(number_length - 1) - j] = '0' + (n % base);
+        n /= base;
     }
 
 
@@ -232,13 +211,13 @@ int my_printf(char * restrict format, ...){
 
         else if(format[i + 1] == 'u'){ //%u
             unsigned int u = va_arg(parametersInfos, unsigned int);
-            counter += print_int_u(u);
+            counter += print_int(u, 10);
             i++;
         }
         
         else if (format[i + 1] == 'o'){ //%o
             unsigned int o = va_arg(parametersInfos, unsigned int);
-            counter += print_int_o(o);
+            counter += print_int(o, 8);
             i++;             
         }
 

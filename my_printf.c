@@ -152,31 +152,6 @@ int print_int_p(void *pointer){
     return byte;
 }
 
-int print_unsigned_int (unsigned int number){
-    size_t number_length = length_number(number);
-    int n = number;
-    char *buf = malloc(number_length + 1); //+1 pour \0
-    if (buf == NULL){
-        return -1;
-    }
-
-    buf[number_length] = '\0';
-    
-    for (size_t j = 0; j < number_length; j++){
-        buf[(number_length - 1) - j] = n < 0 ? '0' - (n % 10) : '0' + (n % 10);
-        n /= 10;
-    }
-    
-    if (number <= 0 && buf[0] == '0'){
-        buf[0] = '-';
-    }
-
-    int byte = write(1, buf, number_length);
-
-    free(buf);
-    return byte;
-}
-
 int write_pourcent_c(va_list parametersInfos){
     char c = va_arg(parametersInfos, int);
     int byte_c = written(c);

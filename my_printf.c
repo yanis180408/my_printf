@@ -143,37 +143,27 @@ int print_int_p(void *pointer){
     return byte;
 }
 
-int write_pourcent_c(va_list parametersInfos){
-    char c = va_arg(parametersInfos, int);
+int write_pourcent_c(char c){
     int byte_c = written(c);
 
     if (byte_c != 1){ // write failed
-        va_end(parametersInfos);
         return -1;
     }
     return byte_c;
 }
 
-int write_pourcent_s(va_list parametersInfos){
-    char *s = va_arg(parametersInfos, char *);
+int write_pourcent_s(char *s){
     int counter = 0; // number of characters written so far
-    int byte_s = 0;
-    if (s != NULL){
-        for (int j = 0; s[j] != '\0'; j++){
-            byte_s = written(s[j]);
 
-            if (byte_s != 1){ // write failed
-                va_end(parametersInfos);
-                return -1;
-            }
-
-            counter += byte_s;
-        }
+    if (s == NULL){  // like the real printf: a NULL string prints "(null)"
+        s = "(null)";
     }
-    else{
-        // NULL string: treated as an error here
-        va_end(parametersInfos);
-        return -1;
+
+    for (int j = 0; s[j] != '\0'; j++){
+        if (written(s[j]) != 1){ // write failed
+            return -1;
+        }
+        counter++;
     }
     return counter;
 }
@@ -209,12 +199,14 @@ int my_printf(char * restrict format, ...){
         }
 
         else if (format[i + 1] == 'c'){ //%c
-            counter += write_pourcent_c(parametersInfos);
+            char c = (char)va_arg(parametersInfos, int);
+            counter += write_pourcent_c(c);
             i++; // skip the conversion letter
         }
 
         else if (format[i + 1] == 's'){ //%s
-            counter += write_pourcent_s(parametersInfos);
+            char *s = va_arg(parametersInfos, char *);
+            counter += write_pourcent_s(s);
             i++; // skip the conversion letter
         }
 
@@ -257,34 +249,38 @@ int my_printf(char * restrict format, ...){
 
 int main(){
     char * a = malloc(2); // allocated just to test with free() at the end
-    // printf("%d\n", my_printf("%d\n", -42));
-    // printf("%d\n", printf("%d\n", -42));
-    // printf("%d\n", my_printf("%d\n", 0));
-    // printf("%d\n", printf("%d\n", 0));
-    // printf("%d\n", my_printf("%u\n", -1));
-    // printf("%d\n", printf("%u\n", -1));
-    // printf("%d\n", my_printf("%x\n", -1));
-    // printf("%d\n", printf("%x\n", -1));
-    // printf("%d\n", my_printf("%o\n", 0));
-    // printf("%d\n", printf("%o\n", 0));
-    // printf("%d\n", my_printf("%c\n", 65));
-    // printf("%d\n", printf("%c\n", 65));
-    // printf("%d\n", my_printf("%c\n", 0));
-    // printf("%d\n", printf("%c\n", 0));
-    // printf("%d\n", my_printf("%s\n", "world"));
-    // printf("%d\n", printf("%s\n", "world"));
-    // printf("%d\n", my_printf("%p\n", NULL));
-    // printf("%d\n", printf("%p\n", NULL));
-    // printf("%d\n", my_printf("%%\n"));
-    // printf("%d\n", printf("%%\n"));
-    // printf("%d\n", my_printf("Hello %s, you are %d!\n", "Bob", 30));
-    // printf("%d\n", printf("Hello %s, you are %d!\n", "Bob", 30));
-    // printf("%d\n", my_printf("no format here\n"));
-    // printf("%d\n", printf("no format here\n"));
-    // printf("%d\n", my_printf("%d\n", INT_MIN));
-    // printf("%d\n", printf("%d\n", INT_MIN));
-    // my_printf("%s %s %s!\n", "Hello", "Mr", "Gaetan");
-    // my_printf("%c%c%c%c%c!\n", 'H', 'e', 'l', 'l', 'o');
+    char * volatile null_str = NULL; // volatile: stops GCC from seeing that it's NULL
+    printf("%d\n", my_printf("%d\n", -42));
+    printf("%d\n", printf("%d\n", -42));
+    printf("%d\n", my_printf("%d\n", 0));
+    printf("%d\n", printf("%d\n", 0));
+    printf("%d\n", my_printf("%u\n", -1));
+    printf("%d\n", printf("%u\n", -1));
+    printf("%d\n", my_printf("%x\n", -1));
+    printf("%d\n", printf("%x\n", -1));
+    printf("%d\n", my_printf("%o\n", 0));
+    printf("%d\n", printf("%o\n", 0));
+    printf("%d\n", my_printf("%c\n", 65));
+    printf("%d\n", printf("%c\n", 65));
+    printf("%d\n", my_printf("%c\n", 0));
+    printf("%d\n", printf("%c\n", 0));
+    printf("%d\n", my_printf("%s\n", "world"));
+    printf("%d\n", printf("%s\n", "world"));
+    printf("%d\n", my_printf("%p\n", NULL));
+    printf("%d\n", printf("%p\n", NULL));
+    printf("%d\n", my_printf("%%\n"));
+    printf("%d\n", printf("%%\n"));
+    printf("%d\n", my_printf("Hello %s, you are %d!\n", "Bob", 30));
+    printf("%d\n", printf("Hello %s, you are %d!\n", "Bob", 30));
+    printf("%d\n", my_printf("no format here\n"));
+    printf("%d\n", printf("no format here\n"));
+    printf("%d\n", my_printf("%d\n", INT_MIN));
+    printf("%d\n", printf("%d\n", INT_MIN));
+    my_printf("%s %s %s!\n", "Hello", "Mr", "Gaetan");
+    printf("%c%c%c%c%c!\n", 'H', 'e', 'l', 'l', 'o');
+    my_printf("%c%c%c%c%c!\n", 'H', 'e', 'l', 'l', 'o');
+    printf("NULL STRING %s!\n", null_str);
+    my_printf("NULL STRING %s!\n", null_str);
     free(a);
     return 0;
 }

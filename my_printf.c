@@ -249,7 +249,7 @@ int my_printf(char * restrict format, ...){
 
 int main(){
     char * a = malloc(2); // allocated just to test with free() at the end
-    char * volatile null_str = NULL; // volatile: stops GCC from seeing that it's NULL
+    char * volatile  null_str = NULL; // volatile: stops GCC from seeing that it's NULL
     printf("%d\n", my_printf("%d\n", -42));
     printf("%d\n", printf("%d\n", -42));
     printf("%d\n", my_printf("%d\n", 0));
